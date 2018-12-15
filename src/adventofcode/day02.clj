@@ -1,37 +1,7 @@
-(ns adventofcode.core
-  (:require [clojure.java.io :as io]))
+(ns adventofcode.day02
+(:require [adventofcode.utils :as u]))
 
-(def freq-file "src/adventofcode/input.txt")
 (def box-ids-file "src/adventofcode/box_ids.txt")
-
-(defn read-file
-  "Reads file and returns a vector where the elements
-   are each line. Converts number strings to longs
-   else defaults to Symbols"
-  [filename]
-  (with-open [rdr (io/reader filename)]
-    (->> (line-seq rdr)
-         (map read-string) ;; converts str to signed numbers
-         (reduce conj [])))) ;; create a vector of numbers but no longer lazy seq
-
-;;; Day 1 Part 1 ;;;
-;; https://adventofcode.com/2018/day/1
-(->> (read-file freq-file)
-     (reduce +)
-     (println "Day 1 Part 1:"))
-
-;;; Day 1 Part 2 ;;;
-;; https://adventofcode.com/2018/day/1#part2
-(defn search [x input acc]
-  (let [[y & more] input
-        sum (+ x y)
-        seen (conj acc sum)]
-    (if (and (not (contains? acc sum)) more)
-      (recur sum more seen)
-      sum)))
-
-(->> (search 0 (cycle (read-file freq-file)) #{})
-     (println "Day 1 Part 2:"))
 
 ;;; Day 2 Part 1 ;;;
 ;; https://adventofcode.com/2018/day/2
@@ -69,7 +39,7 @@
                (reduce +))]
     [x y]))
 
-(->> (read-file box-ids-file)
+(->> (u/read-file box-ids-file)
      (map (comp char-array str)) ;; seq of symbols -> char array
      (map #(search-id {} %)) ;; decompose each id
      (map count-twos-threes)

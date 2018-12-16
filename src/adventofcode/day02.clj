@@ -1,5 +1,5 @@
 (ns adventofcode.day02
-(:require [adventofcode.utils :as u]))
+  (:require [adventofcode.utils :as u]))
 
 (def box-ids-file "src/adventofcode/box_ids.txt")
 
@@ -39,13 +39,50 @@
                (reduce +))]
     [x y]))
 
-(->> (u/read-file box-ids-file)
-     (map (comp char-array str)) ;; seq of symbols -> char array
-     (map #(search-id {} %)) ;; decompose each id
-     (map count-twos-threes)
-     (sum-seq)
-     (reduce *)
-     (println "Day 2 Part 1: "))
+(time
+ (->> (u/read-file box-ids-file)
+      (map (comp char-array str)) ;; seq of symbols -> char array
+      (map #(search-id {} %)) ;; decompose each id
+      (map count-twos-threes)
+      (sum-seq)
+      (reduce *)
+      (println "Day 2 Part 1: ")))
 
 ;;; Day 2 Part 2 ;;;
 ;; https://adventofcode.com/2018/day/2#part2
+(defn remove-differences
+  [[x y]]
+  (->> (for [[i j]
+             (map list (seq x) (seq y)) ;; zip
+             :when (= i j)] ;; only if equal
+         i)
+       (apply str))) ;; convert to string
+
+(defn hamming-distance
+  "https://en.wikipedia.org/wiki/Hamming_distance"
+  [[s1 s2]]
+  (->> (for [[x y] (map list (seq s1) (seq s2)) ;; zip char seq
+             :when (not (= x y))] ;; filter those not equal
+         [x y])
+       (count)))
+
+(defn make-combos
+  "Recursively makes every combination of the
+   list elements, not including itself or dups.
+   i.e. [a b c] => [[a b] [a c] [b c]]"
+  ([acc [x & xs]]
+   (let [acc (into acc (for [j xs]
+                         (vector x j)))]
+     (if xs (recur acc xs)
+         acc)))
+  ([xs]
+   (make-combos [] xs)))
+
+(time
+ (->> (u/read-file box-ids-file)
+      (map str)
+      (make-combos)
+      (group-by hamming-distance) ;; creates map of hamming dist -> list of id tuples
+      (#(first (get % 1))) ;; get id's with a hamming distance of 1
+      (remove-differences)
+      (println "Day 2 Part 2: ")))

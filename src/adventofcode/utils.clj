@@ -10,3 +10,9 @@
     (->> (line-seq rdr)
          (map read-string) ;; converts str to signed numbers
          (reduce conj []))))
+
+(defn len [s]
+  (count s))
+
+(defn eq [s1 s2]
+  (= (len s1) (len s2)))

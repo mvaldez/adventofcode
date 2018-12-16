@@ -52,8 +52,8 @@
 ;; https://adventofcode.com/2018/day/2#part2
 (defn remove-differences
   [[x y]]
-  (->> (for [[i j]
-             (map list (seq x) (seq y)) ;; zip
+  {:pre [(u/eq x y)]}
+  (->> (for [[i j] (map list (seq x) (seq y)) ;; zip
              :when (= i j)] ;; only if equal
          i)
        (apply str))) ;; convert to string
@@ -61,6 +61,8 @@
 (defn hamming-distance
   "https://en.wikipedia.org/wiki/Hamming_distance"
   [[s1 s2]]
+  {:pre [(u/eq s1 s2)]
+   :post [(not (neg? %))]}
   (->> (for [[x y] (map list (seq s1) (seq s2)) ;; zip char seq
              :when (not (= x y))] ;; filter those not equal
          [x y])
@@ -71,9 +73,8 @@
    list elements, not including itself or dups.
    i.e. [a b c] => [[a b] [a c] [b c]]"
   ([acc [x & xs]]
-   (let [acc (into acc (for [j xs]
-                         (vector x j)))]
-     (if xs (recur acc xs)
+   (let [r (for [j xs] (vector x j))]
+     (if xs (recur (into acc r) xs)
          acc)))
   ([xs]
    (make-combos [] xs)))

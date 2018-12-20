@@ -4,9 +4,8 @@
             [cheshire.core :as json]
             [clojure.set :as set]))
 
-;;; Day 3 Part 1 ;;;
-;; https://adventofcode.com/2018/day/3
 (def fabric-claims-file "src/adventofcode/fabric_claims.txt")
+(def more-than-one-claim (fn [a b] (if (> (:claim b) 1) {a b} nil)))
 
 (defn calculate-coordinates [{:keys [id] {:keys [x y l w]} :coords}]
   (let [xi (range x (+ x l))
@@ -23,38 +22,47 @@
               :l l
               :w w}}))
 
-(defn build-mappings [x]
+(defn flatten-coordinates [x]
   (let [id (:id x)
         area (:area x)]
     (into [] (map (fn [[a b]] [a b id]) area))))
 
-(defn build-map
+(defn build-coordinate-map
   ([acc [x & xs]]
-   (let [k (keyword (str (first x) (second x)))
+   (let [k  (coord->key [(first x) (second x)])
+         id (last x)
          m (if (contains? acc k)
-             (update acc k inc)
-             (assoc acc k 1))]
+             (update-in acc [k :claim] inc)
+             (assoc acc k {:id id :claim 1}))]
      (if xs (recur m xs)
-         (filter #(> (second %) 1) m))))
+         m)))
   ([xs]
-   (build-map {} xs)))
+   (build-coordinate-map {} xs)))
 
-;; Elapsed time: 113353.342489 msecs
-(defn search-claims
-  "Too slow.  Need to make this faster."
-  ([acc [x & xs]]
-   (let [r (for [i xs] (set/intersection x i))]
-     (if xs (recur (set/union acc (apply set/union r)) xs)
-         acc)))
-  ([xs]
-   (search-claims #{} xs)))
+(defn filter-m [f m]
+  (into {} (keep (fn [[k v]] (f k v)) m)))
 
+(defn coord->key [[x y]]
+  (keyword (str x "," y)))
+
+;;; Day 3 Part 1 & 2 ;;;
+;; https://adventofcode.com/2018/day/3
 (time
- (->> (u/file->seq fabric-claims-file)
-      (map (comp
-            build-mappings
-            calculate-coordinates
-            parse-location))
-      (reduce concat)
-      (build-map)
-      (count)))
+ (let [coordinates (->> (u/file->seq fabric-claims-file)
+                        (map (comp
+                              calculate-coordinates
+                              parse-location)))
+       claims (->> coordinates
+                   (map flatten-coordinates)
+                   (reduce concat)
+                   (build-coordinate-map)
+                   (filter-m more-than-one-claim))]
+   (->> claims
+        (count)
+        (println "Day 3 Part 1: "))
+   (->> (map (fn [{:keys [id area]}]
+               (if (not-any? #(contains? claims (coord->key %)) area) id))
+             coordinates)
+        (remove nil?)
+        (first)
+        (println "Day 3 Part 2: "))))

@@ -11,8 +11,31 @@
          (map read-string) ;; converts str to signed numbers
          (reduce conj []))))
 
+(defn file->seq
+  [filename]
+  (with-open [rdr (io/reader filename)]
+    (->> (line-seq rdr)
+         (reduce conj []))))
+
 (defn len [s]
   (count s))
 
 (defn eq [s1 s2]
   (= (len s1) (len s2)))
+
+(defn remove-last [s]
+  (subs s 0 (- (len s) 1)))
+
+(defn remove-first [s]
+  (subs s 1))
+
+(defn parse-int [s]
+  (Integer. (re-find  #"\d+" s)))
+
+(defn deep-merge [a b]
+  (merge-with (fn [x y]
+                (cond (map? y) (deep-merge x y)
+                      (vector? y) (concat x y)
+                      (set? y) (concat x y)
+                      :else y))
+              a b))

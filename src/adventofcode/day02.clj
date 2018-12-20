@@ -73,11 +73,13 @@
    list elements, not including itself or dups.
    i.e. [a b c] => [[a b] [a c] [b c]]"
   ([acc [x & xs]]
-   (let [r (for [j xs] (vector x j))]
+   (let [r (for [i xs] (vector x i))]
      (if xs (recur (into acc r) xs)
          acc)))
   ([xs]
    (make-combos [] xs)))
+
+(make-combos [1 2 3])
 
 (time
  (->> (u/read-file box-ids-file)

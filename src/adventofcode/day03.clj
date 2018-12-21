@@ -4,7 +4,7 @@
             [cheshire.core :as json]
             [clojure.set :as set]))
 
-(def fabric-claims-file "src/adventofcode/fabric_claims.txt")
+(def fabric-claims-file "fabric_claims.txt")
 (def more-than-one-claim (fn [a b] (if (> (:claim b) 1) {a b} nil)))
 
 (defn calculate-coordinates [{:keys [id] {:keys [x y l w]} :coords}]

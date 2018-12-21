@@ -1,7 +1,7 @@
 (ns adventofcode.day02
   (:require [adventofcode.utils :as u]))
 
-(def box-ids-file "src/adventofcode/box_ids.txt")
+(def box-ids-file "box_ids.txt")
 
 ;;; Day 2 Part 1 ;;;
 ;; https://adventofcode.com/2018/day/2

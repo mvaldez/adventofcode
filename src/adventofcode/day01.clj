@@ -1,7 +1,7 @@
 (ns adventofcode.day01
   (:require [adventofcode.utils :as u]))
 
-(def freq-file "src/adventofcode/input.txt")
+(def freq-file "input.txt")
 
 ;;; Day 1 Part 1 ;;;
 ;; https://adventofcode.com/2018/day/1

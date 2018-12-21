@@ -6,14 +6,14 @@
    are each line. Converts number strings to longs
    else defaults to Symbols"
   [filename]
-  (with-open [rdr (io/reader filename)]
+  (with-open [rdr (io/reader (.getFile (clojure.java.io/resource filename)))]
     (->> (line-seq rdr)
          (map read-string) ;; converts str to signed numbers
          (reduce conj []))))
 
 (defn file->seq
   [filename]
-  (with-open [rdr (io/reader filename)]
+  (with-open [rdr (io/reader (.getFile (clojure.java.io/resource filename)))]
     (->> (line-seq rdr)
          (reduce conj []))))
 

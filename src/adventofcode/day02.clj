@@ -32,10 +32,10 @@
    elements followed by the sum of the second"
   [xs]
   (let [x (->> xs
-               (map (comp first))
+               (map first)
                (reduce +))
         y (->> xs
-               (map (comp second))
+               (map second)
                (reduce +))]
     [x y]))
 

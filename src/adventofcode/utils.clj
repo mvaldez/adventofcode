@@ -39,3 +39,6 @@
                       (set? y) (concat x y)
                       :else y))
               a b))
+
+(defn pp-map [m]
+  (clojure.pprint/pprint m))
